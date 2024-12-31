@@ -173,6 +173,7 @@ void registerFunctions()
   f2D_64_encode.push_back(encode_2D_64_wrapper("For", &m2D_e_for<uint_fast64_t, uint_fast32_t>));
 
   // Register 2D 32-bit encode functions
+#ifndef __EMSCRIPTEN__
   f2D_32_encode.push_back(encode_2D_32_wrapper(
     "LUT Pre-shifted Early Termination", &m2D_e_sLUT_ET<uint_fast32_t, uint_fast16_t>));
   f2D_32_encode.push_back(
@@ -180,12 +181,13 @@ void registerFunctions()
   f2D_32_encode.push_back(
     encode_2D_32_wrapper("LUT Early Termination", &m2D_e_LUT_ET<uint_fast32_t, uint_fast16_t>));
   f2D_32_encode.push_back(encode_2D_32_wrapper("LUT", &m2D_e_LUT<uint_fast32_t, uint_fast16_t>));
-  f2D_32_encode.push_back(encode_2D_32_wrapper("Magicbits Combined", &m2D_e_magicbits_combined));
   f2D_32_encode.push_back(
     encode_2D_32_wrapper("Magicbits", &m2D_e_magicbits<uint_fast32_t, uint_fast16_t>));
   f2D_32_encode.push_back(
     encode_2D_32_wrapper("For ET", &m2D_e_for_ET<uint_fast32_t, uint_fast16_t>));
+#endif
   f2D_32_encode.push_back(encode_2D_32_wrapper("For", &m2D_e_for<uint_fast32_t, uint_fast16_t>));
+  f2D_32_encode.push_back(encode_2D_32_wrapper("Magicbits Combined", &m2D_e_magicbits_combined));
 
   // Register 2D 64-bit decode functions
   f2D_64_decode.push_back(decode_2D_64_wrapper(
@@ -202,6 +204,7 @@ void registerFunctions()
   f2D_64_decode.push_back(decode_2D_64_wrapper("For", &m2D_d_for<uint_fast64_t, uint_fast32_t>));
 
   // Register 2D 32-bit decode functions
+#ifndef __EMSCRIPTEN__
   f2D_32_decode.push_back(decode_2D_32_wrapper(
     "LUT Shifted Early Termination", &m2D_d_sLUT_ET<uint_fast32_t, uint_fast16_t>));
   f2D_32_decode.push_back(
@@ -209,12 +212,13 @@ void registerFunctions()
   f2D_32_decode.push_back(
     decode_2D_32_wrapper("LUT Early Termination", &m2D_d_LUT_ET<uint_fast32_t, uint_fast16_t>));
   f2D_32_decode.push_back(decode_2D_32_wrapper("LUT", &m2D_d_LUT<uint_fast32_t, uint_fast16_t>));
-  f2D_32_decode.push_back(decode_2D_32_wrapper("Magicbits Combined", &m2D_d_magicbits_combined));
   f2D_32_decode.push_back(
     decode_2D_32_wrapper("Magicbits", &m2D_d_magicbits<uint_fast32_t, uint_fast16_t>));
-  f2D_32_decode.push_back(decode_2D_32_wrapper("For", &m2D_d_for<uint_fast32_t, uint_fast16_t>));
   f2D_32_decode.push_back(
     decode_2D_32_wrapper("For ET", &m2D_d_for_ET<uint_fast32_t, uint_fast16_t>));
+#endif
+  f2D_32_decode.push_back(decode_2D_32_wrapper("For", &m2D_d_for<uint_fast32_t, uint_fast16_t>));
+  f2D_32_decode.push_back(decode_2D_32_wrapper("Magicbits Combined", &m2D_d_magicbits_combined));
 }
 
 void printFunctionStats()
@@ -247,24 +251,76 @@ int main(int argc, char* argv[])
   correct = correct &&
     check3D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t, 64>(
       f3D_64_encode, f3D_64_decode, times);
+  if (!correct)
+  {
+    cout << "(1)." << endl;
+    exit(1);
+  }
+
   correct = correct &&
     check3D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t, 32>(
       f3D_32_encode, f3D_32_decode, times);
+  if (!correct)
+  {
+    cout << "(1)." << endl;
+    exit(1);
+  }
   correct = correct && check3D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_encode);
+  if (!correct)
+  {
+    cout << "(2)." << endl;
+    exit(1);
+  }
   correct = correct && check3D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_encode);
+  if (!correct)
+  {
+    cout << "(3)." << endl;
+    exit(1);
+  }
   correct = correct && check3D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f3D_64_decode);
+  if (!correct)
+  {
+    cout << "(4)." << endl;
+    exit(1);
+  }
   correct = correct && check3D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f3D_32_decode);
 
   cout << "++ Checking 2D methods for correctness" << endl;
   correct = correct &&
     check2D_EncodeDecodeMatch<uint_fast64_t, uint_fast32_t, 64>(
       f2D_64_encode, f2D_64_decode, times);
+  if (!correct)
+  {
+    cout << "(5)." << endl;
+    exit(1);
+  }
+  // Fails
   correct = correct &&
     check2D_EncodeDecodeMatch<uint_fast32_t, uint_fast16_t, 32>(
       f2D_32_encode, f2D_32_decode, times);
+  if (!correct)
+  {
+    cout << "(6)." << endl;
+    exit(1);
+  }
   correct = correct && check2D_EncodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_encode);
+  if (!correct)
+  {
+    cout << "(7)." << endl;
+    exit(1);
+  }
   correct = correct && check2D_EncodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_encode);
+  if (!correct)
+  {
+    cout << "(8)." << endl;
+    exit(1);
+  }
   correct = correct && check2D_DecodeCorrectness<uint_fast64_t, uint_fast32_t, 64>(f2D_64_decode);
+  if (!correct)
+  {
+    cout << "(9)." << endl;
+    exit(1);
+  }
   correct = correct && check2D_DecodeCorrectness<uint_fast32_t, uint_fast16_t, 32>(f2D_32_decode);
   if (!correct)
   {

@@ -6,17 +6,17 @@ include(spsEmscriptenSettings)
 if (EMSCRIPTEN)
   find_package(Threads REQUIRED)
   sps_emscripten_module(
-    64_BIT
     TARGET_NAME libmorton-test
     SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/libmorton_test.cpp
     ES6_MODULE OFF
-    OPTIMIZATION BEST
+    OPTIMIZATION MORE
+#    OPTIMIZATION BEST
     THREADING_ENABLED OFF
     EXIT_RUNTIME ON
     VERBOSE
     SINGLE_FILE
   )
-  target_compile_definitions(libmorton-test PUBLIC "_M_AMD64")
+  # target_compile_definitions(libmorton-test PUBLIC "_M_AMD64")
 else()
   add_executable(libmorton-test
     "libmorton_test.cpp"
@@ -36,6 +36,10 @@ target_link_libraries(libmorton-test
     libmorton::libmorton
   )
 add_test(libmorton-test libmorton-test)
+
+if (EMSCRIPTEN)
+  return()
+endif()
 
 add_executable(libmorton-test-bmi2
   "libmorton_test.cpp"

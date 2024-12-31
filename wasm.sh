@@ -1,2 +1,6 @@
-emcmake cmake -DCMAKE_CXX_FLAGS="--target=wasm64 -matomics -mbulk-memory -pthread" -B wasm -S . 
-cmake --build wasm
+#!/bin/bash
+(
+    source $HOME/github/emsdk/emsdk_env.sh
+    emcmake cmake -DCMAKE_CXX_FLAGS="-matomics -mbulk-memory -pthread" -Bwasm -S. 
+    cmake --build wasm
+)
